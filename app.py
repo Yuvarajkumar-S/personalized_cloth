@@ -69,6 +69,123 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# ============ DYNAMIC IMAGE DATABASE ============
+def get_dynamic_images(user_attributes, predictions):
+    """Return different images based on user inputs"""
+    
+    hair = user_attributes.get('Hair Color', 'Black')
+    body_type = user_attributes.get('Body Proportion', 'Hourglass')
+    undertone = user_attributes.get('Under Tone', 'Warm')
+    skin_tone = user_attributes.get('Skin Tone', 'Medium')
+    eye_color = user_attributes.get('Eye Color', 'Brown')
+    style = predictions.get('Recommended Fitting Style', 'Tailored Fit')
+    jewelry = predictions.get('Recommended Jewelry Metal', 'Gold')
+    
+    # ===== IMAGE 1: Based on Hair Color + Body Type =====
+    hair_images = {
+        'Black': {
+            'Hourglass': 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=400&h=500&fit=crop',
+            'Rectangle': 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&h=500&fit=crop',
+            'Apple': 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=400&h=500&fit=crop',
+            'Pear': 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=400&h=500&fit=crop',
+            'default': 'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=400&h=500&fit=crop'
+        },
+        'Brown': {
+            'Hourglass': 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=400&h=500&fit=crop',
+            'Rectangle': 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=400&h=500&fit=crop',
+            'Apple': 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&h=500&fit=crop',
+            'Pear': 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=400&h=500&fit=crop',
+            'default': 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&h=500&fit=crop'
+        },
+        'Blonde': {
+            'Hourglass': 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=400&h=500&fit=crop',
+            'Rectangle': 'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=400&h=500&fit=crop',
+            'Apple': 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=400&h=500&fit=crop',
+            'Pear': 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&h=500&fit=crop',
+            'default': 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=400&h=500&fit=crop'
+        },
+        'Red': {
+            'Hourglass': 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&h=500&fit=crop',
+            'Rectangle': 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=400&h=500&fit=crop',
+            'Apple': 'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=400&h=500&fit=crop',
+            'Pear': 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=400&h=500&fit=crop',
+            'default': 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=400&h=500&fit=crop'
+        }
+    }
+    
+    image1 = hair_images.get(hair, {}).get(body_type, hair_images.get(hair, {}).get('default', 'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=400&h=500&fit=crop'))
+    
+    # ===== IMAGE 2: Based on Skin Tone + Undertone =====
+    skin_images = {
+        'Fair': {
+            'Warm': 'https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?w=400&h=500&fit=crop',
+            'Cool': 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=400&h=500&fit=crop',
+            'Neutral': 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=400&h=500&fit=crop',
+            'default': 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&h=500&fit=crop'
+        },
+        'Medium': {
+            'Warm': 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=400&h=500&fit=crop',
+            'Cool': 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=400&h=500&fit=crop',
+            'Neutral': 'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=400&h=500&fit=crop',
+            'default': 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&h=500&fit=crop'
+        },
+        'Olive': {
+            'Warm': 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=400&h=500&fit=crop',
+            'Cool': 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&h=500&fit=crop',
+            'Neutral': 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=400&h=500&fit=crop',
+            'default': 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=400&h=500&fit=crop'
+        },
+        'Dark': {
+            'Warm': 'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=400&h=500&fit=crop',
+            'Cool': 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&h=500&fit=crop',
+            'Neutral': 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=400&h=500&fit=crop',
+            'default': 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&h=500&fit=crop'
+        }
+    }
+    
+    image2 = skin_images.get(skin_tone, {}).get(undertone, skin_images.get(skin_tone, {}).get('default', 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=400&h=500&fit=crop'))
+    
+    # ===== IMAGE 3: Based on Eye Color + Jewelry =====
+    eye_images = {
+        'Brown': {
+            'Gold': 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400&h=500&fit=crop',
+            'Silver': 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=400&h=500&fit=crop',
+            'Rose Gold': 'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=400&h=500&fit=crop',
+            'default': 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&h=500&fit=crop'
+        },
+        'Blue': {
+            'Gold': 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=400&h=500&fit=crop',
+            'Silver': 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&h=500&fit=crop',
+            'Rose Gold': 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=400&h=500&fit=crop',
+            'default': 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=400&h=500&fit=crop'
+        },
+        'Green': {
+            'Gold': 'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=400&h=500&fit=crop',
+            'Silver': 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&h=500&fit=crop',
+            'Rose Gold': 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=400&h=500&fit=crop',
+            'default': 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=400&h=500&fit=crop'
+        },
+        'Hazel': {
+            'Gold': 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&h=500&fit=crop',
+            'Silver': 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=400&h=500&fit=crop',
+            'Rose Gold': 'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=400&h=500&fit=crop',
+            'default': 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&h=500&fit=crop'
+        }
+    }
+    
+    image3 = eye_images.get(eye_color, {}).get(jewelry, eye_images.get(eye_color, {}).get('default', 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400&h=500&fit=crop'))
+    
+    # Create descriptive captions based on actual inputs
+    caption1 = f"{style} Outfit for {hair} Hair & {body_type} Body"
+    caption2 = f"{skin_tone} Skin with {undertone} Undertone Collection"
+    caption3 = f"{jewelry} Jewelry for {eye_color} Eyes"
+    
+    return [
+        {'url': image1, 'caption': caption1},
+        {'url': image2, 'caption': caption2},
+        {'url': image3, 'caption': caption3}
+    ]
+
 # ============ LOAD DATA ============
 @st.cache_data
 def load_data():
@@ -261,7 +378,7 @@ if st.button("✨ GET RECOMMENDATIONS ✨", use_container_width=True):
                     'Recommended Clothing Color Wheel Region': 'Warm Colors (red, orange, yellow)',
                     'Fabric Nature': 'Stretchy',
                     'Do Exaggerate': 'Highlight waistline',
-                    "Don't Exaggerate": "Don't exaggerate straight lines"  # FIXED: removed backslash
+                    "Don't Exaggerate": "Don't exaggerate straight lines"
                 }
             
             # Store predictions in session state
@@ -368,23 +485,29 @@ if st.session_state.get('show_results', False):
         dont_exaggerate = predictions.get("Don't Exaggerate", "Don't exaggerate straight lines")
         st.markdown(f"❌ **DON'T:** {dont_exaggerate}")
     
-    # Sample Outfit Images
+    # ===== DYNAMIC IMAGES BASED ON USER INPUTS =====
     st.markdown("---")
     st.markdown("### 🖼️ Outfit Inspiration")
+    
+    # Get dynamic images based on user inputs
+    dynamic_images = get_dynamic_images(user_attrs, predictions)
     
     outfit_col1, outfit_col2, outfit_col3 = st.columns(3)
     
     with outfit_col1:
-        st.image("https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=300&h=350&fit=crop", 
-                 caption=f"{predictions.get('Recommended Fitting Style', 'Tailored')} Outfit", use_container_width=True)
+        st.image(dynamic_images[0]['url'], 
+                 caption=dynamic_images[0]['caption'], 
+                 use_container_width=True)
     
     with outfit_col2:
-        st.image("https://images.unsplash.com/photo-1483985988355-763728e1935b?w=300&h=350&fit=crop", 
-                 caption=f"{user_attrs.get('Body Proportion', 'Hourglass')} Collection", use_container_width=True)
+        st.image(dynamic_images[1]['url'], 
+                 caption=dynamic_images[1]['caption'], 
+                 use_container_width=True)
     
     with outfit_col3:
-        st.image("https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=300&h=350&fit=crop", 
-                 caption=f"{predictions.get('Recommended Jewelry Metal', 'Gold')} Accessories", use_container_width=True)
+        st.image(dynamic_images[2]['url'], 
+                 caption=dynamic_images[2]['caption'], 
+                 use_container_width=True)
     
     # Share and Print buttons
     st.markdown("---")
