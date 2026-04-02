@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import joblib
+#import joblib
 import os
 import time
 
@@ -195,29 +195,8 @@ def load_data():
 @st.cache_resource
 def load_models():
     """Load trained models or train if not exists"""
-    try:
-        # Try to load pre-trained models
-        feature_encoders = joblib.load('models/feature_encoders.pkl')
-        mlb = joblib.load('models/label_encoders.pkl')
-        
-        models = {}
-        output_cols = [
-            'Recommended Clothing Colors', 'Avoid Clothing Colors',
-            'Recommended Materials', 'Recommended Patterns',
-            'Recommended Fitting Style', 'Recommended Jewelry Metal',
-            'Recommended Shoes', 'Recommended Clothing Color Wheel Region',
-            'Fabric Nature', 'Do Exaggerate', "Don't Exaggerate"
-        ]
-        
-        for col in output_cols:
-            safe_name = col.replace(' ', '_').replace('/', '_')
-            model_path = f'models/model_{safe_name}.pkl'
-            if os.path.exists(model_path):
-                models[col] = joblib.load(model_path)
-        
-        return feature_encoders, mlb, models, True
-    except:
-        return None, None, None, False
+    # Temporarily disable model loading
+    return None, None, None, False
 
 # ============ PREDICTION FUNCTION ============
 def predict(user_attributes, feature_encoders, mlb, models):
