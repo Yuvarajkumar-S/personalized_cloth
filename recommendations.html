@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Style Recommendations - StyleAI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .result-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 15px 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-content { padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+        
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 12px;
+        }
+        
+        .color-swatch {
+            text-align: center;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+        }
+        
+        .color-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin: 0 auto 8px;
+            border: 2px solid white;
+        }
+        
+        .color-name { font-size: 0.7rem; }
+        
+        .tags { display: flex; flex-wrap: wrap; gap: 10px; }
+        .tag {
+            background: rgba(102,126,234,0.3);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        
+        .tag-success { background: rgba(76,175,80,0.3); }
+        .tag-danger { background: rgba(244,67,54,0.3); }
+        
+        .outfit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .outfit-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .outfit-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+        
+        .outfit-info { padding: 15px; }
+        .outfit-title { font-weight: 700; margin-bottom: 5px; }
+        .outfit-desc { font-size: 0.8rem; color: rgba(255,255,255,0.7); margin-bottom: 10px; }
+        .outfit-price { color: #4caf50; font-weight: 700; margin-top: 10px; }
+        
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.1);
+            padding: 12px 24px;
+            border-radius: 30px;
+            color: white;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+        
+        .btn-back:hover { background: #667eea; transform: translateX(-5px); transition: all 0.3s; }
+        
+        .header-recommended { background: linear-gradient(135deg, #4caf50, #2e7d32); }
+        .header-avoid { background: linear-gradient(135deg, #f44336, #c62828); }
+        .header-style { background: linear-gradient(135deg, #2196f3, #0b5e7e); }
+        .header-materials { background: linear-gradient(135deg, #ff9800, #f57c00); }
+        .header-jewelry { background: linear-gradient(135deg, #ffc107, #ff8f00); }
+        .header-shoes { background: linear-gradient(135deg, #795548, #4e2e2a); }
+        .header-tips { background: linear-gradient(135deg, #00bcd4, #00838f); }
+        
+        @media (max-width: 768px) {
+            .results-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo"><i class="fas fa-tshirt"></i> StyleAI</div>
+        <div class="nav-links">
+            <a href="/"><i class="fas fa-home"></i> Home</a>
+            <a href="/about"><i class="fas fa-info-circle"></i> About</a>
+            <a href="#" onclick="window.print(); return false;"><i class="fas fa-print"></i> Print</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="hero">
+            <h1>✨ Your Style Recommendations ✨</h1>
+            <p>Personalized just for you based on your unique features</p>
+            <div class="badge" style="margin-top: 10px;">⚡ Generated in {{ prediction_time }} seconds</div>
+        </div>
+
+        <div class="form-card" style="margin-bottom: 30px;">
+            <h3 style="margin-bottom: 20px;"><i class="fas fa-user-circle"></i> Your Profile</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                <div><strong>Hair:</strong> {{ user_attributes['Hair Color'] }}</div>
+                <div><strong>Eyes:</strong> {{ user_attributes['Eye Color'] }}</div>
+                <div><strong>Skin:</strong> {{ user_attributes['Skin Tone'] }}</div>
+                <div><strong>Undertone:</strong> {{ user_attributes['Under Tone'] }}</div>
+                <div><strong>Torso:</strong> {{ user_attributes['Torso length'] }}</div>
+                <div><strong>Body:</strong> {{ user_attributes['Body Proportion'] }}</div>
+            </div>
+        </div>
+
+        <div class="results-grid">
+            <div class="result-card">
+                <div class="card-header header-recommended"><i class="fas fa-palette"></i> Recommended Colors</div>
+                <div class="card-content">
+                    <div class="color-grid">
+                        {% for color in recommendations.recommended_colors %}
+                        <div class="color-swatch">
+                            <div class="color-circle" style="background: 
+                                {% if 'Red' in color %}#ff6b6b
+                                {% elif 'Green' in color %}#6b8e23
+                                {% elif 'Blue' in color %}#4dabf7
+                                {% elif 'Gold' in color %}#ffd700
+                                {% elif 'Brown' in color %}#8b5a2b
+                                {% else %}#667eea{% endif %};"></div>
+                            <div class="color-name">{{ color }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <div class="card-header header-avoid"><i class="fas fa-ban"></i> Colors to Avoid</div>
+                <div class="card-content">
+                    <div class="tags">
+                        {% for color in recommendations.avoid_colors %}
+                        <span class="tag">{{ color }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <div class="card-header header-style"><i class="fas fa-tshirt"></i> Fitting Style</div>
+                <div class="card-content"><div class="tags"><span class="tag">{{ recommendations.fitting_style }}</span></div></div>
+            </div>
+
+            <div class="result-card">
+                <div class="card-header header-materials"><i class="fas fa-thread"></i> Materials</div>
+                <div class="card-content"><div class="tags">{% for m in recommendations.materials %}<span class="tag">{{ m }}</span>{% endfor %}</div></div>
+            </div>
+
+            <div class="result-card">
+                <div class="card-header header-jewelry"><i class="fas fa-gem"></i> Jewelry Metal</div>
+                <div class="card-content"><div class="tags"><span class="tag">{{ recommendations.jewelry_metal }}</span></div></div>
+            </div>
+
+            <div class="result-card">
+                <div class="card-header header-shoes"><i class="fas fa-shoe-prints"></i> Shoes</div>
+                <div class="card-content"><div class="tags"><span class="tag">{{ recommendations.shoes }}</span></div></div>
+            </div>
+
+            <div class="result-card">
+                <div class="card-header header-tips"><i class="fas fa-lightbulb"></i> Styling Tips</div>
+                <div class="card-content">
+                    <div class="tags">
+                        <span class="tag tag-success">✅ DO: {{ recommendations.exaggerate }}</span>
+                        <span class="tag tag-danger">❌ DON'T: {{ recommendations.dont_exaggerate }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="result-card">
+            <div class="card-header" style="background: linear-gradient(135deg, #e91e63, #ad1457);"><i class="fas fa-images"></i> Complete Outfit Ideas</div>
+            <div class="card-content">
+                <div class="outfit-grid">
+                    {% for outfit in outfit_images %}
+                    <div class="outfit-card">
+                        <img src="{{ outfit.image_url }}" alt="{{ outfit.name }}" class="outfit-image">
+                        <div class="outfit-info">
+                            <div class="outfit-title">{{ outfit.name }}</div>
+                            <div class="outfit-desc">{{ outfit.description }}</div>
+                            <div class="tags">{% for color in outfit.colors %}<span class="tag" style="font-size:0.7rem">{{ color }}</span>{% endfor %}</div>
+                            <div class="outfit-price">{{ outfit.price }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <a href="/" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Form</a>
+    </div>
+
+    <footer style="text-align: center; padding: 30px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 50px;">
+        <p style="font-size: 0.75rem; color: rgba(255,255,255,0.4);">&copy; 2024 StyleAI - AI-Powered Personal Clothing Recommender</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

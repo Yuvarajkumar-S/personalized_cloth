@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StyleAI - Personal Clothing Recommender</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .required { color: #f44336; margin-left: 3px; }
+        .input-hint { font-size: 0.7rem; color: rgba(255,255,255,0.5); margin-top: 5px; }
+        .hero-stats { display: flex; justify-content: center; gap: 30px; margin-top: 30px; flex-wrap: wrap; }
+        .hero-stat { text-align: center; }
+        .hero-stat .number { font-size: 1.5rem; font-weight: 800; color: #667eea; }
+        .hero-stat .label { font-size: 0.75rem; color: rgba(255,255,255,0.6); }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div class="loading-text">Analyzing your style profile...</div>
+        <div class="loading-text" style="font-size: 0.8rem; margin-top: 10px;">This may take a few seconds</div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo"><i class="fas fa-tshirt"></i> StyleAI</div>
+        <div class="nav-links">
+            <a href="/"><i class="fas fa-home"></i> Home</a>
+            <a href="/about"><i class="fas fa-info-circle"></i> About</a>
+            <a href="#" onclick="shareWebsite(); return false;"><i class="fas fa-share-alt"></i> Share</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="hero">
+            <div class="badge"><i class="fas fa-robot"></i> AI-Powered • 95%+ Accuracy</div>
+            <h1>Find Your <span class="gradient-text">Perfect Style</span></h1>
+            <p>Powered by Random Forest AI. Get personalized clothing recommendations based on your unique features.</p>
+            
+            <div class="hero-stats">
+                <div class="hero-stat"><div class="number">95%+</div><div class="label">Accuracy</div></div>
+                <div class="hero-stat"><div class="number">100</div><div class="label">Decision Trees</div></div>
+                <div class="hero-stat"><div class="number">13</div><div class="label">Recommendations</div></div>
+                <div class="hero-stat"><div class="number">6</div><div class="label">Input Features</div></div>
+            </div>
+        </div>
+
+        <div class="form-card">
+            <form id="recommendation-form" action="/recommend" method="POST">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label><i class="fas fa-female"></i> Hair Color <span class="required">*</span></label>
+                        <select name="hair_color" id="hair_color" required>
+                            <option value="">Select hair color</option>
+                            {% for color in options.hair_colors %}
+                            <option value="{{ color }}">{{ color }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label><i class="fas fa-eye"></i> Eye Color <span class="required">*</span></label>
+                        <select name="eye_color" id="eye_color" required>
+                            <option value="">Select eye color</option>
+                            {% for color in options.eye_colors %}
+                            <option value="{{ color }}">{{ color }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label><i class="fas fa-palette"></i> Skin Tone <span class="required">*</span></label>
+                        <select name="skin_tone" id="skin_tone" required>
+                            <option value="">Select skin tone</option>
+                            {% for tone in options.skin_tones %}
+                            <option value="{{ tone }}">{{ tone }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label><i class="fas fa-temperature-high"></i> Under Tone <span class="required">*</span></label>
+                        <select name="under_tone" id="under_tone" required>
+                            <option value="">Select undertone</option>
+                            {% for tone in options.under_tones %}
+                            <option value="{{ tone }}">{{ tone }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label><i class="fas fa-ruler"></i> Torso Length <span class="required">*</span></label>
+                        <select name="torso_length" id="torso_length" required>
+                            <option value="">Select torso length</option>
+                            {% for length in options.torso_lengths %}
+                            <option value="{{ length }}">{{ length }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label><i class="fas fa-venus-mars"></i> Body Proportion <span class="required">*</span></label>
+                        <select name="body_proportion" id="body_proportion" required>
+                            <option value="">Select body type</option>
+                            {% for prop in options.body_proportions %}
+                            <option value="{{ prop }}">{{ prop }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary"><i class="fas fa-magic"></i> Get Recommendations</button>
+                    <button type="button" class="btn-secondary" onclick="resetForm()"><i class="fas fa-undo-alt"></i> Reset</button>
+                    <button type="button" class="btn-secondary" onclick="fillExample()"><i class="fas fa-user-check"></i> Try Example</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="features">
+            <div class="feature"><div class="feature-icon">🎨</div><h3>Color Analysis</h3><p>Personalized color palette</p></div>
+            <div class="feature"><div class="feature-icon">👗</div><h3>Style Guide</h3><p>Fitting styles for your body</p></div>
+            <div class="feature"><div class="feature-icon">💎</div><h3>Accessories</h3><p>Jewelry & shoe recommendations</p></div>
+            <div class="feature"><div class="feature-icon">🤖</div><h3>AI Powered</h3><p>95%+ accuracy</p></div>
+        </div>
+    </div>
+
+    <footer style="text-align: center; padding: 30px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 50px;">
+        <p style="font-size: 0.75rem; color: rgba(255,255,255,0.4);">&copy; 2024 StyleAI - AI-Powered Personal Clothing Recommender</p>
+    </footer>
+
+    <script>
+        document.getElementById('recommendation-form').addEventListener('submit', function(e) {
+            const selects = this.querySelectorAll('select');
+            let allFilled = true;
+            selects.forEach(select => {
+                if (!select.value) {
+                    allFilled = false;
+                    select.style.borderColor = '#f44336';
+                } else {
+                    select.style.borderColor = '';
+                }
+            });
+            if (!allFilled) {
+                e.preventDefault();
+                showToast('Please fill in all fields', 'error');
+            }
+        });
+    </script>
+</body>
+</html>
