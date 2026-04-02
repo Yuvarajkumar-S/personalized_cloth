@@ -3,8 +3,6 @@ import pandas as pd
 import numpy as np
 import joblib
 import os
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.preprocessing import LabelEncoder, MultiLabelBinarizer
 import time
 
 # ============ PAGE CONFIGURATION ============
@@ -154,7 +152,7 @@ def predict(user_attributes, feature_encoders, mlb, models):
         'Recommended Clothing Color Wheel Region': 'Warm Colors',
         'Fabric Nature': 'Stretchy',
         'Do Exaggerate': 'Highlight waistline',
-        "Don't Exaggerate": 'Dont exaggerate straight lines'
+        "Don't Exaggerate": "Don't exaggerate straight lines"
     }
     
     # Merge predictions with defaults
@@ -165,16 +163,24 @@ def predict(user_attributes, feature_encoders, mlb, models):
     return predictions
 
 # ============ LOAD DATA AND MODELS ============
-df = load_data()
-feature_encoders, mlb, models, models_loaded = load_models()
+try:
+    df = load_data()
+    hair_options = sorted(df['Hair Color'].unique())
+    eye_options = sorted(df['Eye Color'].unique())
+    skin_options = sorted(df['Skin Tone'].unique())
+    under_options = sorted(df['Under Tone'].unique())
+    torso_options = sorted(df['Torso length'].unique())
+    body_options = sorted(df['Body Proportion'].unique())
+except:
+    # Fallback options if data loading fails
+    hair_options = ['Black', 'Brown', 'Blonde', 'Red']
+    eye_options = ['Brown', 'Blue', 'Green', 'Hazel']
+    skin_options = ['Fair', 'Medium', 'Olive', 'Dark']
+    under_options = ['Warm', 'Cool', 'Neutral']
+    torso_options = ['Short', 'Balanced', 'Long']
+    body_options = ['Hourglass', 'Rectangle', 'Apple', 'Pear']
 
-# Get unique options for dropdowns
-hair_options = sorted(df['Hair Color'].unique())
-eye_options = sorted(df['Eye Color'].unique())
-skin_options = sorted(df['Skin Tone'].unique())
-under_options = sorted(df['Under Tone'].unique())
-torso_options = sorted(df['Torso length'].unique())
-body_options = sorted(df['Body Proportion'].unique())
+feature_encoders, mlb, models, models_loaded = load_models()
 
 # ============ HEADER ============
 st.markdown("""
@@ -255,7 +261,7 @@ if st.button("✨ GET RECOMMENDATIONS ✨", use_container_width=True):
                     'Recommended Clothing Color Wheel Region': 'Warm Colors (red, orange, yellow)',
                     'Fabric Nature': 'Stretchy',
                     'Do Exaggerate': 'Highlight waistline',
-                    "Don't Exaggerate": 'Dont exaggerate straight lines'
+                    "Don't Exaggerate": "Don't exaggerate straight lines"  # FIXED: removed backslash
                 }
             
             # Store predictions in session state
@@ -294,7 +300,6 @@ if st.session_state.get('show_results', False):
         # Recommended Colors
         st.markdown("### ✅ Recommended Colors")
         colors = predictions.get('Recommended Clothing Colors', [])
-        color_html = ""
         color_map = {
             'Earth Tones': '#8B5A2B', 'Olive': '#6B8E23', 'Coral': '#FF7F50',
             'Peach': '#FFDAB9', 'Mustard': '#FFDB58', 'Warm Red': '#FF6B6B',
@@ -359,7 +364,9 @@ if st.session_state.get('show_results', False):
     with tip_col1:
         st.markdown(f"✅ **DO:** {predictions.get('Do Exaggerate', 'Highlight waistline')}")
     with tip_col2:
-        st.markdown(f"❌ **DON'T:** {predictions.get(\"Don't Exaggerate\", 'Dont exaggerate straight lines')}")
+        # FIXED: Properly escaped apostrophe
+        dont_exaggerate = predictions.get("Don't Exaggerate", "Don't exaggerate straight lines")
+        st.markdown(f"❌ **DON'T:** {dont_exaggerate}")
     
     # Sample Outfit Images
     st.markdown("---")
